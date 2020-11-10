@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./css/style.css">
+  <title>
+    Simon Says | Game
+  </title>
+</head>
+<body>
+  <main>
+    <section>
+      <div class="buttom__container">
+        <button id="buttomStart" onclick="createGame()">Start Game</button>
+      </div>
+    </section>
+    <section class="main__container">
+      <div class="colors__container">
+        <div id="red" class="item__color --dark-red" data-color="red"></div>
+        <div id="green" class="item__color --dark-green" data-color="green"></div>
+        <div id="yellow" class="item__color --dark-yellow" data-color="yellow"></div>
+        <div id="blue" class="item__color --dark-blue" data-color="blue"></div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="timer__container">
+      <div id="timer" class="timer">0 secs</div>
+    </div>
+  </footer>
+  <script src="./js/funcions.js"></script>
+</body>
+</html>

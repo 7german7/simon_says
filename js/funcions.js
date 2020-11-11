@@ -72,8 +72,11 @@ class Game {
         let color = newThis.numberToColor(secuence[counter]);
         let darkColor = "--dark-"+color;
         let lightColor = "--light-"+color;
-        newThis.colorElement(color).classList.remove(darkColor);
-        newThis.colorElement(color).classList.add(lightColor);
+        let element = newThis.colorElement(color);
+        newThis.turnOn(element, darkColor, lightColor);
+        setTimeout( function () {
+          newThis.turnOff(element, darkColor, lightColor)
+        }, 1000);
         counter++;
       }
       else {
@@ -81,6 +84,16 @@ class Game {
         clearInterval(colorChangerTimer);
       }
     },1000, newThis);
+  }
+
+  turnOn(element, darkColor, lightColor) {
+    element.classList.remove(darkColor);
+    element.classList.add(lightColor);
+  }
+
+  turnOff(element, darkColor, lightColor) {
+    element.classList.remove(lightColor);
+    element.classList.add(darkColor);
   }
 
   colorElement(color) {

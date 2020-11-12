@@ -9,7 +9,13 @@
   </title>
 </head>
 <body>
-  <main>
+  <header>
+    <audio id="audio" src="./click_sound.mp3"></audio>
+    <div class="level__container">
+        <div id="levelDisplayer" class="level --hide">Level 1</div>
+    </div>
+  </header>
+  <main >
     <section>
       <div class="buttom__container">
         <button id="buttomStart" onclick="createGame()">Start Game</button>
@@ -23,10 +29,17 @@
         <div id="blue" class="item__color --dark-blue" data-color="blue"></div>
       </div>
     </section>
+    <section>
+      <aside>
+        <div class="message__container">
+          <div id="messageDisplayer" class="message --hide"></div>
+        </div>
+      </aside>
+    </section>
   </main>
   <footer>
     <div class="timer__container">
-      <div id="timer" class="timer">0 secs</div>
+      <div id="timeDisplayer" class="timer --hide">0 secs</div>
     </div>
   </footer>
   <script src="./js/funcions.js"></script>

@@ -7,33 +7,53 @@ const blue = document.getElementById("blue");
 
 const MAX_LEVEL = 10;
 
-
 class Game {
   constructor() {
     /*Timer*/
     this.counter = 0;
+    this.secuenceCounter = 0;
+    this.secuenceByLevel = [];
+    this.demoStatus = false;
     this.showCounter = this.showCounter.bind(this);
-    this.secuenceByLevel = this.secuenceByLevel.bind(this);
-    this.colorChanger = this.colorChanger.bind(this);
+    this.secuenceByLevelGenerator = this.secuenceByLevelGenerator.bind(this);
 
     /*Game*/
     this.level = 1;
     this.numericSequence = Array(10).fill(0);
-
-    /*Colores*/
-    this.colors = {
-      red,
-      green,
-      yellow,
-      blue
-    };
   }
 
   initialize() {
     buttomStart.classList.add("--hide");
     this.sequenceInitializer();
     this.timeCounterId = setInterval(this.showCounter, 1000);
-    this.colorTimer = setTimeout(this.secuenceByLevel, 2000);
+    this.secuenceByLevelGenerator();
+    this.startLevel();
+  }
+
+  startLevel() {
+    this.startDemo();
+    this.eventsCreator();
+  }
+
+  startDemo() {
+    this.demoStatus = true;
+    let demoTimer = setTimeout( () => {
+      if (this.secuenceCounter < this.level) {
+        console.log("Numero del color: "+this.secuenceByLevel[this.level].secuence[this.secuenceCounter]);
+        let color = this.numberToColor(this.secuenceByLevel[this.level].secuence[this.secuenceCounter]);
+        this.turnOn(color.element, "--light-"+color.name, "--dark-"+color.name);
+        this.secuenceCounter++;
+        this.startDemo();
+      }
+      else {
+        this.secuenceCounter = 0;
+        this.demoStatus = false;
+        clearTimeout(demoTimer);
+      }
+    },1500);
+  }
+
+  changeColor() {
   }
 
   sequenceInitializer() {
@@ -47,88 +67,101 @@ class Game {
     timer.innerHTML = this.counter+" secs";
   }
 
-  secuenceByLevel() {
+  secuenceByLevelGenerator() {
     let secuence = Array(this.level);
-    console.log("Nivel: "+this.level);
     for (let i = 0; i < this.level; i++) {
       secuence[i] = this.numericSequence[i];
     }
-    console.log(secuence);
-    this.colorChanger(secuence);
-    // if(this.level<MAX_LEVEL) {
-    //   this.level++;
-    //   setTimeout(this.secuenceByLevel, 2000);
-    // }
-    // else {
-    //   clearInterval(this.colorTimer);
-    // }
-  }
 
-  colorChanger(secuence) {
-    let counter = 0;
-    let newThis = this;
-    let colorChangerTimer = setInterval(function () {
-      if(counter < secuence.length) {
-        let color = newThis.numberToColor(secuence[counter]);
-        let darkColor = "--dark-"+color;
-        let lightColor = "--light-"+color;
-        let element = newThis.colorElement(color);
-        newThis.turnOn(element, darkColor, lightColor);
-        setTimeout( function () {
-          newThis.turnOff(element, darkColor, lightColor)
-        }, 1000);
-        counter++;
-      }
-      else {
-        console.log("Se limpio el tiempo");
-        clearInterval(colorChangerTimer);
-      }
-    },1000, newThis);
-  }
+    this.secuenceByLevel[this.level] = {
+      "level": this.level,
+      "secuence": secuence
+    };
 
-  turnOn(element, darkColor, lightColor) {
-    element.classList.remove(darkColor);
-    element.classList.add(lightColor);
-  }
-
-  turnOff(element, darkColor, lightColor) {
-    element.classList.remove(lightColor);
-    element.classList.add(darkColor);
-  }
-
-  colorElement(color) {
-    switch (color) {
-      case "red":
-        return this.colors.red;
-    
-      case "green":
-        return this.colors.green;
-
-      case "yellow":
-        return this.colors.yellow;
-
-      case "blue":
-        return this.colors.blue;
+    if(this.level<MAX_LEVEL) {
+      this.level++;
+      this.secuenceByLevelGenerator();
     }
+    else {
+      this.level = 1;
+    }
+  }
+
+  eventsCreator() {
+    red.addEventListener("click", () => this.checkSecuence(red, "--light-red", "--dark-red"));
+    green.addEventListener("click", () => this.checkSecuence(green, "--light-green", "--dark-green"));
+    yellow.addEventListener("click", () => this.checkSecuence(yellow, "--light-yellow", "--dark-yellow"));
+    blue.addEventListener("click", () => this.checkSecuence(blue, "--light-blue", "--dark-blue"));
+  }
+
+  turnOn(element , colorOn, colorOff) {
+    element.classList.add(colorOn);
+    element.classList.remove(colorOff);
+    setTimeout( function () {
+      element.classList.remove(colorOn);
+      element.classList.add(colorOff);
+    },1000, element , colorOn, colorOff);
+  }
+
+  checkSecuence(element , colorOn, colorOff) {
+    let colorClick = element.getAttribute("data-color");
+    let colorSecuence = this.numberToColor(this.secuenceByLevel[this.level].secuence[this.secuenceCounter]);
+    if(colorClick.toString()==colorSecuence.name.toString()) {
+      this.secuenceCounter++;
+      console.log("Bien");
+      if(this.level==this.secuenceCounter) {
+        if(this.level!=MAX_LEVEL) {
+          console.log("Siguiente Nivel");
+          this.level++;
+          this.secuenceCounter = 0;
+          this.startDemo();
+        }
+        else {
+          clearInterval(this.timeCounterId);
+          alert("Has ganado el juego");
+          let response = confirm("¿Desea iniciar otra partida?");
+          if(response) {
+            document.location.reload();
+          }
+        }
+      }
+    }
+    else {
+      clearInterval(this.timeCounterId);
+      alert("Has perdido");
+      document.location.reload();
+    }
+    this.turnOn(element , colorOn, colorOff);
   }
 
   numberToColor(number) {
     switch (number) {
       case 0:
-        return "red";
+        return {
+          "name": "red",
+          "element": red
+        };
     
       case 1:
-        return "green";
+        return {
+          "name": "green",
+          "element": green
+        };
 
       case 2:
-        return "yellow";
+        return {
+          "name": "yellow",
+          "element": yellow
+        };
 
       case 3:
-        return "blue";
+        return {
+          "name": "blue",
+          "element": blue
+        };
     }
   }
 }
-
 
 function createGame() {
   let game = new Game;
